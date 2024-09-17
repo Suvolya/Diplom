@@ -33,36 +33,10 @@ public class EspressoHelper extends EspressoTestBase {
         Allure.step("Тап по кнопке с id: " + resourceId);
         onView(withId(resourceId)).perform(click());
     }
-
-
-    public static void clickRecyclerView(Integer resourceId, int position) {
-        Allure.step("Тап на позицию: " + position + " в списке с id: " + resourceId);
-        ViewInteraction recyclerView = onView(withId(resourceId));
-        recyclerView.check(matches(isDisplayed()));
-        recyclerView.perform(actionOnItemAtPosition(position, click()));
-    }
-
-    public static void findRecyclerView(Integer resourceId, String title) {
-        Allure.step("Поиск " + title + " в списке с id: " + resourceId);
-        elementWaiting(withId(resourceId), 8000);
-        ViewInteraction recyclerView = onView(allOf(withId(resourceId)));
-        recyclerView.check(matches(isDisplayed()));
-        onView(withId(resourceId))
-                .check(matches(not(hasDescendant(allOf(
-                        withId(R.id.title),
-                        withText(title),
-                        isDisplayed()
-                )))));
-    }
-
+    
     public void scrollAndClickButton(Integer resourceId) {
         Allure.step("Скролл и тап по кнопке с id: " + resourceId);
         onView((withId(resourceId))).perform(scrollTo(), click());
-    }
-
-    public void nestedScrollAndClickButton(Integer resourceId) {
-        Allure.step("Вложенный скролл и тап по кнопке с id: " + resourceId);
-        onView(withId(resourceId)).perform(nestedScrollTo(), click());
     }
 
     public void checkById(Integer resourceId) {
@@ -97,8 +71,6 @@ public class EspressoHelper extends EspressoTestBase {
         appCompatImageButton.check(matches(isDisplayed()));
         appCompatImageButton.perform(click());
         ViewInteraction materialTextView = onView(allOf(withId(android.R.id.title), withText(menu_item)));
-        //ViewInteraction materialTextView = onView(withId(android.R.id.title));
-        //materialTextView.hasXPath("/hierarchy/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.ListView/android.widget.LinearLayout[3]/android.widget.LinearLayout");
         materialTextView.check(matches(isDisplayed()));
         materialTextView.perform(click());
     }
@@ -112,20 +84,6 @@ public class EspressoHelper extends EspressoTestBase {
         textView.check(matches(withText(text)));
     }
 
-    public void clickAllOfChild(Integer resourceId, Integer resourceChild, int position, int actionPosition) {
-        Allure.step("Тап по элементу с id: " + resourceId + " в позиции" + actionPosition + " с дочерним id: " + resourceChild + " на позиции " + position);
-        ViewInteraction recyclerView = onView(
-                allOf(withId(resourceId),
-                        childAtPosition(
-                                withId(resourceChild),
-                                position)));
-        recyclerView.perform(actionOnItemAtPosition(actionPosition, click()));
-    }
 
-   /*public void clickFilterButton() {
-       Allure.step("Тап по кнопке FILTER");
-       ViewInteraction materialButton = onView((withId(R.id.filters_material_button)));
-       materialButton.check(matches(isDisplayed()));
-       materialButton.perform(click());
-    }*/
+
 }

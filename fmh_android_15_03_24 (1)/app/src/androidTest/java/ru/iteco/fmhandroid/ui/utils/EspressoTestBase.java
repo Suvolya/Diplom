@@ -122,24 +122,6 @@ public class EspressoTestBase {
         };
     }
 
-    public static Matcher<View> childAtPosition(Matcher<View> matcher, final Matcher<View> parentMatcher, final int position) {
-
-        return new TypeSafeMatcher<View>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Child at position " + position + " in parent ");
-                parentMatcher.describeTo(description);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                ViewParent parent = view.getParent();
-                return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup) parent).getChildAt(position));
-            }
-        };
-    }
-
     public static class ToastMatcher extends TypeSafeMatcher<Root> {
 
         @Override
@@ -174,49 +156,8 @@ public class EspressoTestBase {
         return timeFormat.format(date);
     }
 
-    public String getFirstListItem() {
-        final String[] title = {""};
 
-        onView(withId(R.id.news_list_recycler_view)).perform(RecyclerViewActions.scrollToPosition(0)).perform(RecyclerViewActions.actionOnItemAtPosition(0, new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return isAssignableFrom(TextView.class);
-            }
-
-            @Override
-            public String getDescription() {
-                return "Get the first item";
-            }
-
-            @Override
-            public void perform(UiController uiController, View view) {
-                TextView textView = (TextView) view;
-                title[0] = textView.getText().toString();
-            }
-        }));
-
-        return title[0];
-    }
-
-    public static Matcher<View> withIndex(final Matcher<View> matcher, final int index) {
-        return new TypeSafeMatcher<View>() {
-            int currentIndex = 0;
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("with index: ");
-                description.appendValue(index);
-                matcher.describeTo(description);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                return matcher.matches(view) && currentIndex++ == index;
-            }
-        };
-    }
-
-    /*public static String getText(ViewInteraction matcher) {
+    public static String getText(ViewInteraction matcher) {
         final String[] text = new String[1];
         ViewAction viewAction = new ViewAction() {
 
@@ -240,7 +181,7 @@ public class EspressoTestBase {
         matcher.perform(viewAction);
 
         return text[0];
-    }*/
+    }
 
     public static ViewAction clickChildViewWithId(final int id) {
         return new ViewAction() {
@@ -297,64 +238,6 @@ public class EspressoTestBase {
         }
     }
 
-    public static Matcher<View> withRecyclerViewItemResource(final int resourceId) {
-        return new TypeSafeMatcher<View>() {
-
-            @Override
-            protected boolean matchesSafely(View view) {
-                if (view instanceof RecyclerView) {
-                    RecyclerView recyclerView = (RecyclerView) view;
-                    int itemCount = recyclerView.getAdapter().getItemCount();
-                    for (int position = 0; position < itemCount; position++) {
-                        RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(position);
-                        if (viewHolder != null && viewHolder.itemView.getId() != resourceId) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("RecyclerView items should have resource id: " + resourceId);
-            }
-        };
-    }
-
-    public class ScrollToViewAction implements ViewAction {
-        private final Matcher<View> viewMatcher;
-
-        public ScrollToViewAction(Matcher<View> viewMatcher) {
-            this.viewMatcher = viewMatcher;
-        }
-
-        @Override
-        public Matcher<View> getConstraints() {
-            return allOf(isAssignableFrom(RecyclerView.class), isDisplayed());
-        }
-
-        @Override
-        public String getDescription() {
-            return "scroll RecyclerView to specific view";
-        }
-
-        @Override
-        public void perform(UiController uiController, View view) {
-            RecyclerView recyclerView = (RecyclerView) view;
-            RecyclerView.Adapter adapter = recyclerView.getAdapter();
-            for (int i = 0; i < adapter.getItemCount(); i++) {
-                int viewType = adapter.getItemViewType(i);
-                RecyclerView.ViewHolder holder = adapter.createViewHolder(recyclerView, viewType);
-                adapter.bindViewHolder(holder, i);
-                if (viewMatcher.matches(holder.itemView)) {
-                    recyclerView.scrollToPosition(i);
-                    return;
-                }
-            }
-        }
-    }
 
     private static View findFirstParentLayoutOfClass(View view) {
         ViewParent parent = new FrameLayout(view.getContext());
